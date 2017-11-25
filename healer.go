@@ -4,15 +4,9 @@ import (
   "log"
   "regexp"
   "strings"
+  "os"
   docker "github.com/fsouza/go-dockerclient"
 )
-
-
-func assert(err error) {
-	if err != nil {
-		log.Fatal(err)
-	}
-}
 
 var regex, err = regexp.Compile(`HEALING_ACTION=(STOP|RESTART|NONE)`)
 
@@ -27,8 +21,11 @@ func getHealingAction(env []string) string {
 }
 
 func main() {
-	endpoint := "unix:///var/run/docker.sock"
-	client, err := docker.NewClient(endpoint)
+  dockerHost := os.Getenv("DOCKER_HOST")
+  if dockerHost == "" {
+    os.Setenv("DOCKER_HOST", "unix:///tmp/docker.sock")
+  }
+	client, err := docker.NewClientFromEnv()
 	if err != nil {
 		panic(err)
 	}
@@ -44,7 +41,8 @@ func main() {
   for {
     select {
       case event := <-listener:
-          if event.Type == "container" && strings.Contains(event.Action, "unhealthy") {
+          if event != nil && event.Type == "container" && strings.Contains(event.Action, "unhealthy") {
+            log.Println(event.Status)
             log.Printf("Container %s marked unhealthy\n", event.Actor.ID)
             container, err := client.InspectContainer(event.Actor.ID);
             if err == nil {
