@@ -41,7 +41,7 @@ func main() {
   for {
     select {
       case event := <-listener:
-          if event != nil && event.Type == "container" && strings.Contains(event.Action, "unhealthy") {
+          if event.Type == "container" && strings.Contains(event.Action, "unhealthy") {
             log.Println(event.Status)
             log.Printf("Container %s marked unhealthy\n", event.Actor.ID)
             container, err := client.InspectContainer(event.Actor.ID);

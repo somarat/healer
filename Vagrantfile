@@ -65,9 +65,13 @@ Vagrant.configure("2") do |config|
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
     yum update -y
-    yum install -y git vim
+    yum install -y git vim gcc
+    curl -fsSL get.docker.com -o get-docker.sh
+    sh get-docker.sh
+    usermod -aG docker vagrant
+    service docker start
     curl -LO https://storage.googleapis.com/golang/go1.9.2.linux-amd64.tar.gz
     tar -C /usr/local -xvzf go1.9.2.linux-amd64.tar.gz
-    export PATH=$PATH:/usr/local/go/bin
+    echo "export PATH=\$PATH:/usr/local/go/bin" > /etc/profile.d/path.sh
   SHELL
 end
