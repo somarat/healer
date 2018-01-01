@@ -4,7 +4,9 @@ Automatically stops or restarts docker containers that report themselves unhealt
 ## Why is this needed?
 The ability to automatically restart failed containers is built in to Docker itself. But what if the container is still running, but
 doesn't work properly anymore?
+
 If you're using Kubernetes, you can configure a health check and have Kubernetes restart unhealthy containers for you.
+
 But if you're using AWS ECS, this behavior applies only to containers that are part of an ELB target group. Containers that sit behind this layer (in a typical microservice architecture) do not benefit from this.
 
 ## How to use
