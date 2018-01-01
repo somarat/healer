@@ -17,7 +17,7 @@ Start Healer:
 ```
 docker run -d --volume=/var/run/docker.sock:/tmp/docker.sock somarat/healer:latest  
 ```
-Start managed container:
+Start monitored container:
 ```
 docker run --health-interval=10s  -e "HEALING_ACTION=STOP" --health-cmd="curl -I --silent --fail localhost:8080 || exit 1" myimage:latest
 ```
