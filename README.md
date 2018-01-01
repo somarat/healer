@@ -2,7 +2,7 @@
 Automatically stops or restarts docker containers that report themselves unhealthy.
 
 ## Why is this needed?
-The ability to automatically restart failed containers is built in to Docker itself. But what if the container is still running, but
+The ability to automatically restart failed containers is built in to Docker itself. But what if the container is still running but
 doesn't work properly anymore?
 
 If you're using Kubernetes, you can configure a health check and have Kubernetes restart unhealthy containers for you.
