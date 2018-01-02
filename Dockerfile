@@ -1,13 +1,13 @@
-FROM alpine:3.6
-ENTRYPOINT ["/bin/healer"]
+FROM golang:1.9.2-alpine3.7
 
-COPY . /go/src/github.com/rworsnop/healer
-RUN apk --no-cache add -t build-deps build-base go git \
+WORKDIR /go/src/app
+COPY . .
+
+RUN apk --no-cache add -t build-deps build-base git \
 	&& apk --no-cache add ca-certificates \
-	&& cd /go/src/github.com/rworsnop/healer \
-	&& export GOPATH=/go \
-  && git config --global http.https://gopkg.in.followRedirects true \
-	&& go get \
-	&& go build -ldflags "-X main.Version=$(cat VERSION)" -o /bin/healer \
-	&& rm -rf /go \
-	&& apk del --purge build-deps
+  && git config --global http.https://gopkg.in.followRedirects true 
+
+RUN go-wrapper download
+RUN go-wrapper install
+
+CMD ["go-wrapper", "run"]
