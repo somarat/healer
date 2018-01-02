@@ -8,7 +8,7 @@ import (
   docker "github.com/fsouza/go-dockerclient"
 )
 
-var regex, err = regexp.Compile(`HEALING_ACTION=(STOP|RESTART|NONE)`)
+var regex, err = regexp.Compile(`^HEALING_ACTION=(STOP|RESTART|NONE)$`)
 
 func getHealingAction(env []string) string {
   for _, element := range env {
