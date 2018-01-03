@@ -19,5 +19,9 @@ docker run -d --volume=/var/run/docker.sock:/tmp/docker.sock somarat/healer:late
 ```
 Start monitored container:
 ```
-docker run --health-interval=10s  -e "HEALING_ACTION=STOP" --health-cmd="curl -I --silent --fail localhost:8080 || exit 1" myimage:latest
+docker run -e "HEALING_ACTION=RESTART" \
+  --health-interval=10s \
+  --health-cmd="curl -I --silent --fail localhost:8080 || exit 1" \
+  myimage:latest
 ```
+In this case Healer will restart the monitored container if its health check fails.
