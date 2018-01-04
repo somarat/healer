@@ -20,6 +20,26 @@ func getHealingAction(env []string) string {
   return "NONE"
 }
 
+func handleEvent(client *docker.Client, event *docker.APIEvents) {
+  if event.Type == "container" && strings.Contains(event.Action, "unhealthy") {
+    log.Println(event.Status)
+    log.Printf("Container %s marked unhealthy\n", event.Actor.ID)
+    container, err := client.InspectContainer(event.Actor.ID);
+    if err == nil {
+      switch getHealingAction(container.Config.Env) {
+      case "STOP":
+        client.StopContainer(event.Actor.ID, 10)
+        log.Printf("Stopped container %s\n", event.Actor.ID)
+      case "RESTART":
+        client.RestartContainer(event.Actor.ID, 10)
+        log.Printf("Restarted container %s\n", event.Actor.ID)
+      default:
+        log.Printf("Leaving container %s alone\n", event.Actor.ID)
+      }
+    }
+  }
+}
+
 func main() {
   dockerHost := os.Getenv("DOCKER_HOST")
   if dockerHost == "" {
@@ -41,23 +61,7 @@ func main() {
   for {
     select {
       case event := <-listener:
-          if event.Type == "container" && strings.Contains(event.Action, "unhealthy") {
-            log.Println(event.Status)
-            log.Printf("Container %s marked unhealthy\n", event.Actor.ID)
-            container, err := client.InspectContainer(event.Actor.ID);
-            if err == nil {
-              switch getHealingAction(container.Config.Env) {
-              case "STOP":
-                client.StopContainer(event.Actor.ID, 10)
-                log.Printf("Stopped container %s\n", event.Actor.ID)
-              case "RESTART":
-                client.RestartContainer(event.Actor.ID, 10)
-                log.Printf("Restarted container %s\n", event.Actor.ID)
-              default:
-                log.Printf("Leaving container %s alone\n", event.Actor.ID)
-              }
-            }
-      }
+        go handleEvent(client, event)
     }
   }
 }
