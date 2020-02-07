@@ -7,7 +7,7 @@ doesn't work properly anymore?
 
 If you're using Kubernetes, you can configure a health check and have Kubernetes restart unhealthy containers for you.
 
-But if you're using AWS ECS, this behavior applies only to containers that are part of an ELB target group. Containers that sit behind this layer (in a typical microservice architecture) do not benefit from this.
+But if you're using AWS ECS, this behavior applies only to containers that are part of an ELB target group. Containers that sit behind this layer (in a typical microservice architecture) do not benefit from this. _(Update: AWS ECS now supports restarts on all containers, so you no longer need healer with ECS.)_
 
 ## How to use
 Healer uses Docker's built-in health functionality (see the [docs](https://docs.docker.com/engine/reference/commandline/run/)). When it sees that a container is unhealthy, it will either ignore the event, stop the container, or restart the container. The action taken depends on the value of the `HEALING_ACTION` environment variable set for the monitored container. `HEALING_ACTION` can be set to `NONE`, `STOP`, or `RESTART`.
